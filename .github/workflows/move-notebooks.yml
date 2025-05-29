@@ -1,0 +1,30 @@
+
+name: Move Notebooks to Python Folder
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  move-notebooks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Move .ipynb files to Python folder
+      run: |
+        mkdir -p Python
+        shopt -s nullglob
+        for file in *.ipynb; do
+          git mv "$file" Python/
+        done
+
+    - name: Commit changes
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+        git commit -am "Auto-moved notebooks to Python folder" || echo "No changes"
+        git push
