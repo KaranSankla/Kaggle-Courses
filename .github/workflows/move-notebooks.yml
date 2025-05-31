@@ -1,10 +1,12 @@
-
 name: Move Notebooks to Python Folder
 
 on:
   push:
     branches:
       - main
+
+permissions:
+  contents: write  # 🟢 Required to allow pushing changes
 
 jobs:
   move-notebooks:
@@ -13,6 +15,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}  # 🟢 Use the default GitHub Actions token
 
     - name: Move .ipynb files to Python folder
       run: |
@@ -22,9 +26,11 @@ jobs:
           git mv "$file" Python/
         done
 
-    - name: Commit changes
+    - name: Commit and push changes
       run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
-        git commit -am "Auto-moved notebooks to Python folder" || echo "No changes"
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git commit -am "Auto-moved notebooks to Python folder" || echo "No changes to commit"
         git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
